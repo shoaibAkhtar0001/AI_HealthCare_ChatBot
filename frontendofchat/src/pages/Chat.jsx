@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, MessageSquare, User, Clock, Book, Settings, Mic, Paperclip, Send, Image as ImageIcon, X as XIcon, Check, X, AlertTriangle, Trash2, MapPin } from 'lucide-react';
+import { Search, Plus, MessageSquare, User, Clock, Book, Settings, Mic, Paperclip, Send, Image as ImageIcon, X as XIcon, Check, X, AlertTriangle, Trash2, MapPin, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -11,6 +11,7 @@ const Chat = () => {
   const [sessions, setSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -103,6 +104,7 @@ const Chat = () => {
   const handleNewChat = () => {
     setCurrentSessionId(null);
     setMessages([]);
+    setIsSidebarOpen(false);
   };
 
   const handleDeleteSession = async (e, sessionIdToDel) => {
@@ -495,17 +497,31 @@ const Chat = () => {
   };
 
   return (
-    <div className="h-screen flex bg-slate-50 font-sans text-slate-900 overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="h-[100dvh] flex bg-slate-50 font-sans text-slate-900 overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
       
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Left Sidebar */}
-      <div className="w-80 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0">
+      <div className={`fixed inset-y-0 left-0 w-80 bg-white border-r border-slate-200 flex flex-col h-full z-50 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         
         {/* Branding & New Chat */}
-        <div className="p-6 border-b border-slate-100">
-          <div className="flex items-center mb-6">
+        <div className="p-6 border-b border-slate-100 flex-shrink-0">
+          <div className="flex items-center justify-between mb-6">
             <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 tracking-tighter">
               Intellichat <span className="text-slate-800">Health</span>
             </span>
+            <button 
+              onClick={() => setIsSidebarOpen(false)} 
+              className="md:hidden p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <XIcon size={20} />
+            </button>
           </div>
           
           <button 
@@ -539,7 +555,10 @@ const Chat = () => {
             sessions.map((session) => (
               <div key={session.id} className="relative group w-full flex items-center pr-2">
                 <button 
-                  onClick={() => setCurrentSessionId(session.id)}
+                  onClick={() => {
+                     setCurrentSessionId(session.id);
+                     setIsSidebarOpen(false);
+                  }}
                   className={`flex-1 text-left flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 transition-colors ${currentSessionId === session.id ? 'bg-slate-100 text-indigo-700 font-semibold' : 'text-slate-700 hover:text-indigo-600'}`}
                 >
                   <MessageSquare size={16} className={`${currentSessionId === session.id ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-500'}`} />
@@ -593,7 +612,14 @@ const Chat = () => {
         <BreathingExercise isOpen={showBreathing} onClose={() => setShowBreathing(false)} />
         
         {/* Chat Header */}
-        <div className="h-16 flex items-center px-8 bg-white border-b border-slate-200 shadow-sm z-10 flex-shrink-0">
+        <div className="h-16 flex items-center px-4 sm:px-8 bg-white border-b border-slate-200 shadow-sm z-10 flex-shrink-0">
+          <button 
+            onClick={() => setIsSidebarOpen(true)} 
+            className="md:hidden mr-3 p-2 -ml-2 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Open sidebar"
+          >
+             <Menu size={20} />
+          </button>
           <h1 className="text-lg font-bold text-slate-800">AI Health Assistant</h1>
         </div>
 
