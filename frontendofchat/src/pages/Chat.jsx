@@ -42,7 +42,7 @@ const Chat = () => {
       if (msgs && msgs.length > 2) {
         const uid = localStorage.getItem('user_id');
         if (uid) {
-          fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/summarize-chat', {
+          fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/summarize-chat', {
             method: 'POST',
             keepalive: true,
             headers: { 'Content-Type': 'application/json' },
@@ -61,7 +61,7 @@ const Chat = () => {
 
     const fetchSessions = async () => {
       try {
-        const response = await fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/sessions?user_id=${userId}`);
+        const response = await fetch(`https://ai-healthcare-chatbot-0t17.onrender.com/api/sessions?user_id=${userId}`);
         if (response.ok) {
           const data = await response.json();
           setSessions(data.sessions);
@@ -83,7 +83,7 @@ const Chat = () => {
         return;
       }
       try {
-        const response = await fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/history?session_id=${currentSessionId}`);
+        const response = await fetch(`https://ai-healthcare-chatbot-0t17.onrender.com/api/history?session_id=${currentSessionId}`);
         if (response.ok) {
           const data = await response.json();
           const historyMessages = [];
@@ -110,7 +110,7 @@ const Chat = () => {
     
     if (messages.length > 2 && currentSessionId === sessionIdToDel) {
        try {
-         fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/summarize-chat', {
+         fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/summarize-chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, messages })
@@ -119,7 +119,7 @@ const Chat = () => {
     }
 
     try {
-      const response = await fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/sessions/delete', {
+      const response = await fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/sessions/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -145,7 +145,7 @@ const Chat = () => {
       setMessages(prev => [...prev, { role: 'user', content: "Find nearby doctors" }]);
       navigator.geolocation.getCurrentPosition(async (position) => {
         try {
-          const response = await fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/nearby-doctors', {
+          const response = await fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/nearby-doctors', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -274,7 +274,7 @@ const Chat = () => {
         headers = { 'Content-Type': 'application/json' };
       }
 
-      const response = await fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/chat', {
+      const response = await fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/chat', {
         method: 'POST',
         headers: headers,
         body: requestBody
@@ -289,7 +289,7 @@ const Chat = () => {
       if (data.session_id && !currentSessionId) {
         setCurrentSessionId(data.session_id);
         // Refresh sessions list to show the new one
-        const sessionsRes = await fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/sessions?user_id=${userId}`);
+        const sessionsRes = await fetch(`https://ai-healthcare-chatbot-0t17.onrender.com/api/sessions?user_id=${userId}`);
         if (sessionsRes.ok) {
           const sData = await sessionsRes.json();
           setSessions(sData.sessions);
@@ -798,3 +798,4 @@ const Chat = () => {
 };
 
 export default Chat;
+

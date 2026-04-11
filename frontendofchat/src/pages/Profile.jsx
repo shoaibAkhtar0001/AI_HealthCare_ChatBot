@@ -25,7 +25,7 @@ const Profile = () => {
     
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/profile?user_id=${userId}`);
+        const response = await fetch(`https://ai-healthcare-chatbot-0t17.onrender.com/api/profile?user_id=${userId}`);
         if (response.ok) {
           const data = await response.json();
           setFormData({
@@ -60,7 +60,7 @@ const Profile = () => {
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/profile', {
+      const response = await fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, user_id: userId })
@@ -259,3 +259,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

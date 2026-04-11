@@ -18,7 +18,7 @@ const HealthHistory = () => {
     }
     
     setIsLoading(true);
-    fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/health-history?user_id=${userId}`)
+    fetch(`https://ai-healthcare-chatbot-0t17.onrender.com/api/health-history?user_id=${userId}`)
       .then(res => res.json())
       .then(resData => {
         if (!resData.error) {
@@ -224,3 +224,4 @@ const HealthHistory = () => {
 };
 
 export default HealthHistory;
+

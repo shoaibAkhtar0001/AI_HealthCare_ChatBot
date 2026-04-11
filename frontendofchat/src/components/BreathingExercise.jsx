@@ -31,7 +31,7 @@ const BreathingExercise = ({ isOpen, onClose }) => {
       const duration = (pattern.inhale + pattern.hold + pattern.exhale) * pattern.rounds;
       const userId = localStorage.getItem('user_id');
       if (userId) {
-        fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/save-breathing', {
+        fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/save-breathing', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -245,3 +245,4 @@ const BreathingExercise = ({ isOpen, onClose }) => {
 };
 
 export default BreathingExercise;
+
