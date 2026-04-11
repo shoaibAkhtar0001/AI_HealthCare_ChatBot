@@ -18,7 +18,7 @@ const HealthHistory = () => {
     }
     
     setIsLoading(true);
-    fetch(`http://localhost:5000/api/health-history?user_id=${userId}`)
+    fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/health-history?user_id=${userId}`)
       .then(res => res.json())
       .then(resData => {
         if (!resData.error) {

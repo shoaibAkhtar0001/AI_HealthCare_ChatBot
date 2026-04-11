@@ -13,7 +13,7 @@ const History = () => {
 
     const fetchHistory = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/history?user_id=${userId}`);
+        const response = await fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/history?user_id=${userId}`);
         if (response.ok) {
           const data = await response.json();
           setHistory(data.history || []);

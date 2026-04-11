@@ -90,7 +90,7 @@ const Library = () => {
 
     const fetchLibrary = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/library');
+        const response = await fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/library');
         if (response.ok) {
           const data = await response.json();
           // Use API data if it has more than the 2 default DB records, otherwise use our rich defaults

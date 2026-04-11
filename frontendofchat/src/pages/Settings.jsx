@@ -28,7 +28,7 @@ const Settings = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/settings?user_id=${userId}`);
+        const response = await fetch(`https://ai-healthcare-chatbot-0r7i.onrender.com/api/settings?user_id=${userId}`);
         if (response.ok) {
           const data = await response.json();
           setUserData(prev => ({ ...prev, username: data.username, email: data.email }));
@@ -50,7 +50,7 @@ const Settings = () => {
     setNotifications(newNotifications);
     
     try {
-      await fetch('http://localhost:5000/api/settings', {
+      await fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -65,7 +65,7 @@ const Settings = () => {
 
   const handleProfileUpdate = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings', {
+      const response = await fetch('https://ai-healthcare-chatbot-0r7i.onrender.com/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
