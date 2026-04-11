@@ -225,9 +225,10 @@ Address user by their first name naturally.
                 session = ChatSession.objects.get(id=session_id, user=user)
                 session.save() # update updated_at
             except ChatSession.DoesNotExist:
-                return JsonResponse({"error": "Session not found"}, status=404)
+                title = message[:50] + "..." if len(message) > 50 else "New Chat"
+                session = ChatSession.objects.create(user=user, title=title)
         else:
-            title = message[:50] + "..." if len(message) > 50 else message
+            title = message[:50] + "..." if len(message) > 50 else (message if message else "Uploaded Image")
             session = ChatSession.objects.create(user=user, title=title)
 
         # Call Gemini API
