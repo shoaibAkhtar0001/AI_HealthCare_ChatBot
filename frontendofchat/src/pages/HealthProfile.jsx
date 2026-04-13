@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { User, Activity, AlertCircle, Phone, Check, LogOut, ChevronLeft, Save } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const HealthProfile = () => {
   const [profile, setProfile] = useState({
@@ -15,6 +16,7 @@ const HealthProfile = () => {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
+  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('user_id');
@@ -79,6 +81,20 @@ const HealthProfile = () => {
 
   return (
     <div className="flex flex-col h-full bg-slate-50 Nice-Scrollbar overflow-y-auto w-full max-w-4xl mx-auto pb-12">
+      <AnimatePresence>
+        {showToast && (
+          <motion.div 
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 font-medium text-sm"
+          >
+            <div className="bg-emerald-500 rounded-full p-1"><Check size={14} className="text-white" /></div>
+            Profile Saved Successfully!
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-5 sticky top-0 z-10 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
@@ -196,7 +212,8 @@ const HealthProfile = () => {
            <button 
              onClick={() => {
                 saveProfile(profile);
-                alert("Profile Saved Successfully!");
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 3000);
              }}
              className="flex items-center space-x-2 px-8 py-3.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl transition-all shadow-md hover:shadow-lg font-bold"
            >
