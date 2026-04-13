@@ -505,7 +505,12 @@ def nearby_doctors(request):
         out body;
         """
         
-        response = requests.post(overpass_url, data=query)
+        headers = {'User-Agent': 'IntelliChatHealth/1.0 (Testing)'}
+        response = requests.post(overpass_url, data=query, headers=headers)
+        
+        if not response.ok:
+            return JsonResponse({"error": "Overpass API unavailable", "details": response.text}, status=502)
+            
         elements = response.json().get('elements', [])
         
         doctors = []
