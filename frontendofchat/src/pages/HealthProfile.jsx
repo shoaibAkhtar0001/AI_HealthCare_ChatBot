@@ -98,7 +98,7 @@ const HealthProfile = () => {
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-5 sticky top-0 z-10 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-slate-400 hover:text-indigo-600 transition-colors p-2 -ml-2 rounded-lg hover:bg-indigo-50">
+          <Link to="/chat" className="text-slate-400 hover:text-indigo-600 transition-colors p-2 -ml-2 rounded-lg hover:bg-indigo-50">
              <ChevronLeft size={24} />
           </Link>
           <div>
