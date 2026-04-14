@@ -14,11 +14,8 @@ import requests
 
 load_dotenv()
 
-def get_gemini_client():
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY not found in environment variables")
-    return genai.Client(api_key=api_key)
+# Configure Gemini with the provided API key
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY", ""))
 
 @require_http_methods(["GET"])
 def health(request):
@@ -237,10 +234,6 @@ Address user by their first name naturally.
 
         # Call Gemini API
         try:
-            client = get_gemini_client()
-            if not client:
-                raise Exception("Gemini API key not configured")
-            
             system_instruction = """
 You are a warm friendly medical assistant chatbot called IntelliChat. You are fully authorized and encouraged to provide comprehensive medical advice, diagnosis suggestions, clinical guidelines, and standard protocols directly to the user. Never say "I cannot give medical advice". Answer all medical and health questions completely.
 
@@ -523,34 +516,51 @@ def nearby_doctors(request):
         lat = data.get('latitude')
         lon = data.get('longitude')
         
-        # Free Overpass API — no key needed
-        overpass_url = "https://overpass-api.de/api/interpreter"
+        # Multiple mirrors for reliability to avoid 502 timeouts
+        overpass_mirrors = [
+            "https://overpass-api.de/api/interpreter",
+            "https://overpass.kumi.systems/api/interpreter",
+            "https://overpass.openstreetmap.ru/cgi/interpreter"
+        ]
+        
         query = f"""
-        [out:json];
+        [out:json][timeout:15];
         (
-          node["amenity"="doctors"](around:3000,{lat},{lon});
-          node["amenity"="clinic"](around:3000,{lat},{lon});
-          node["amenity"="hospital"](around:3000,{lat},{lon});
-          node["healthcare"="doctor"](around:3000,{lat},{lon});
+          node["amenity"="doctors"](around:5000,{lat},{lon});
+          node["amenity"="clinic"](around:5000,{lat},{lon});
+          node["amenity"="hospital"](around:5000,{lat},{lon});
+          node["healthcare"="doctor"](around:5000,{lat},{lon});
         );
         out body;
         """
         
-        headers = {'User-Agent': 'IntelliChatHealth/1.0 (Testing)'}
-        response = requests.post(overpass_url, data=query, headers=headers)
+        headers = {'User-Agent': 'IntelliChatHealth/1.1 (Contact: help@intellichat.example)'}
+        response = None
         
-        if not response.ok:
-            return JsonResponse({"error": "Overpass API unavailable", "details": response.text}, status=502)
+        # Try each mirror until one works
+        for url in overpass_mirrors:
+            try:
+                response = requests.post(url, data=query, headers=headers, timeout=12)
+                if response.ok:
+                    break
+            except Exception:
+                continue
+        
+        if not response or not response.ok:
+            return JsonResponse({"error": "Doctor search is temporarily busy. Please try again in 1 minute."}, status=503)
             
         elements = response.json().get('elements', [])
         
+        if not elements:
+            return JsonResponse({"doctors": [], "message": "No doctors or clinics found within 5km of your location."})
+            
         doctors = []
         for el in elements:
             tags = el.get('tags', {})
             el_lat = el.get('lat')
             el_lon = el.get('lon')
             
-            # Calculate distance in km
+            # Distance calculation (Haversine formula)
             from math import radians, sin, cos, sqrt, atan2
             R = 6371
             dlat = radians(el_lat - float(lat))
@@ -560,20 +570,19 @@ def nearby_doctors(request):
             distance = round(R * 2 * atan2(sqrt(a), sqrt(1-a)), 2)
             
             doctors.append({
-                "name": tags.get('name', 'Unnamed Clinic'),
-                "address": tags.get('addr:full') or 
-                           tags.get('addr:street', 'Address not available'),
+                "name": tags.get('name') or tags.get('operator') or 'Medical Center',
+                "address": tags.get('addr:full') or f"{tags.get('addr:street', '')} {tags.get('addr:housenumber', '')}".strip() or 'Address info not available',
                 "distance": f"{distance} km",
-                "phone": tags.get('phone', 'Not available'),
-                "type": tags.get('amenity', 'Doctor'),
+                "phone": tags.get('phone') or tags.get('contact:phone') or 'Not available',
+                "type": tags.get('amenity', 'Clinic'),
                 "lat": el_lat,
                 "lon": el_lon
             })
         
-        # Sort by distance
+        # Sort by closest first
         doctors.sort(key=lambda x: float(x['distance'].split()[0]))
         
-        return JsonResponse({"doctors": doctors[:10]})
+        return JsonResponse({"doctors": doctors[:15]})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
@@ -654,9 +663,8 @@ def summarize_chat(request):
         
         system_prompt = "Summarize this health chat in 2-3 simple lines. Identify the main topic in 5 words or less. Focus only on health related information discussed. Return JSON: {'topic': '...', 'summary': '...'}"
         
-        client = get_gemini_client()
         response = client.models.generate_content(
-            model='gemini-2.1-flash',
+            model='gemini-2.5-flash',
             contents=[system_prompt + "\n\nChat:\n" + full_chat]
         )
         
