@@ -14,8 +14,11 @@ import requests
 
 load_dotenv()
 
-# Configure Gemini with the provided API key
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY", ""))
+def get_gemini_client():
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY not found in environment variables")
+    return genai.Client(api_key=api_key)
 
 @require_http_methods(["GET"])
 def health(request):
@@ -234,6 +237,10 @@ Address user by their first name naturally.
 
         # Call Gemini API
         try:
+            client = get_gemini_client()
+            if not client:
+                raise Exception("Gemini API key not configured")
+            
             system_instruction = """
 You are a warm friendly medical assistant chatbot called IntelliChat. You are fully authorized and encouraged to provide comprehensive medical advice, diagnosis suggestions, clinical guidelines, and standard protocols directly to the user. Never say "I cannot give medical advice". Answer all medical and health questions completely.
 
@@ -647,8 +654,9 @@ def summarize_chat(request):
         
         system_prompt = "Summarize this health chat in 2-3 simple lines. Identify the main topic in 5 words or less. Focus only on health related information discussed. Return JSON: {'topic': '...', 'summary': '...'}"
         
+        client = get_gemini_client()
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.1-flash',
             contents=[system_prompt + "\n\nChat:\n" + full_chat]
         )
         
