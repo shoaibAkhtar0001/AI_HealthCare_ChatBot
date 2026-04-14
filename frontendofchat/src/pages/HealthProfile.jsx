@@ -27,7 +27,7 @@ const HealthProfile = () => {
       return;
     }
     // Fetch profile on load
-    fetch(`https://ai-healthcare-chatbot-0t17.onrender.com/api/health-profile?user_id=${userId}`)
+    fetch(`https://ai-healthcare-chatbot-0t17.onrender.com/api/health-profile/?user_id=${userId}`)
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
@@ -41,7 +41,7 @@ const HealthProfile = () => {
   const saveProfile = useCallback((data) => {
     setIsSaving(true);
     setSaveStatus('');
-    fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/health-profile', {
+    fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/health-profile/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...data, user_id: userId })

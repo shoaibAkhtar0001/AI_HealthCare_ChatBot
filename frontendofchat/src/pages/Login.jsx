@@ -21,7 +21,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/login', {
+      const response = await fetch('https://ai-healthcare-chatbot-0t17.onrender.com/api/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
