@@ -384,7 +384,10 @@ ADDITIONAL RULES — DO NOT CHANGE ANYTHING ELSE:
                         break  # Success
                     except Exception as retry_err:
                         last_err = retry_err
-                        if '503' in str(retry_err) or 'UNAVAILABLE' in str(retry_err):
+                        err_str = str(retry_err)
+                        if '429' in err_str or 'RESOURCE_EXHAUSTED' in err_str:
+                            break  # Quota exhausted, skip to next model immediately
+                        elif '503' in err_str or 'UNAVAILABLE' in err_str:
                             time.sleep(2 * (attempt + 1))  # Wait 2s, then 4s
                         else:
                             break  # Non-retryable error
