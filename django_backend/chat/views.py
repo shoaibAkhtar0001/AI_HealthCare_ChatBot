@@ -1,5 +1,6 @@
 import json
 import base64
+import time
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -369,10 +370,30 @@ ADDITIONAL RULES — DO NOT CHANGE ANYTHING ELSE:
                     genai.types.Part.from_bytes(data=file_data, mime_type=mime_type)
                 )
 
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=api_contents
-            )
+            response = None
+            models_to_try = ['gemini-2.5-flash', 'gemini-2.0-flash']
+            last_err = None
+            for model_name in models_to_try:
+                for attempt in range(2):  # 2 attempts per model
+                    try:
+                        response = client.models.generate_content(
+                            model=model_name,
+                            contents=api_contents
+                        )
+                        last_err = None
+                        break  # Success
+                    except Exception as retry_err:
+                        last_err = retry_err
+                        if '503' in str(retry_err) or 'UNAVAILABLE' in str(retry_err):
+                            time.sleep(2 * (attempt + 1))  # Wait 2s, then 4s
+                        else:
+                            break  # Non-retryable error
+                if response and not last_err:
+                    break  # Got a successful response
+
+            if last_err:
+                raise last_err
+
             reply_text = response.text
             
             # Parse AI JSON response
