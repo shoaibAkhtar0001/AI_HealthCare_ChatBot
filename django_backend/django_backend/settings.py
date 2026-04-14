@@ -27,11 +27,7 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*'] # Accept all hosts for now during setup
 
-CORS_ALLOWED_ORIGINS = [
-    "https://ai-health-care-chat-bot-beta.vercel.app",
-]
-
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
