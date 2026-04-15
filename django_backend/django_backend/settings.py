@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-@r@nnnkyz15hyi76q%#q(86a*&8@e@lv-7q_w&mm%-4e3m6mv!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*'] # Accept all hosts for now during setup
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'ai-healthcare-chatbot-0t17.onrender.com,localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -111,6 +111,47 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# CORS settings for frontend deployment (Vercel)
+CORS_ALLOWED_ORIGINS = [
+    "https://ai-health-care-chat-bot-beta.vercel.app",  # Fixed domain typo
+    "https://ai-healthcare-chatbot-beta.vercel.app",    # Keeping previous one just in case
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+CORS_ALLOW_CREDENTIALS = True
+CORS_PREFLIGHT_MAX_AGE = 86400  # 1 day
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    "https://ai-health-care-chat-bot-beta.vercel.app",
+    "https://ai-healthcare-chatbot-beta.vercel.app",
+    "https://ai-healthcare-chatbot-0t17.onrender.com"
+]
